@@ -1,0 +1,29 @@
+services:
+  chrome:
+    image: femtopixel/google-chrome-headless
+    # with --remote-allow-origins=*
+    command: [ ./chrome-linux/chrome, --headless, --disable-dev-shm-usage-disable-gpu, --remote-debugging-address=0.0.0.0, --remote-debugging-port=9222, --no-sandbox, --disable-software-rasterizer, --remote-allow-origins=* ]
+    # without --remote-allow-origins=*
+    #command: [ ./chrome-linux/chrome, --headless, --disable-dev-shm-usage-disable-gpu, --remote-debugging-address=0.0.0.0, --remote-debugging-port=9222, --no-sandbox, --disable-software-rasterizer ]
+    networks:
+      static-network:
+        ipv4_address: 172.30.128.2
+
+  php:
+    user: '1000:1000' # set to your uid:gid
+    image: testvr
+    ports:
+      - "80:80"
+    depends_on:
+        - chrome
+    # volumes:
+    #     - .:/var/www/html
+    networks:
+      static-network:
+        ipv4_address: 172.30.128.3
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
